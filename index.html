@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🔥 BLAZE Visualizer — Real-Time EDM & Audio Engine</title>
+  <meta name="description" content="Next-Gen Real-Time Audio Visualizer featuring Blaze Ears 2.0 (Cyber Feline), Trap Nation, Monstercat, Cyber Skyline, and 10 dynamic visualizer styles." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app-container">
+    <!-- Visualizer Canvas -->
+    <div id="canvas-container">
+      <canvas id="visualizer-canvas"></canvas>
+    </div>
+
+    <!-- Drag & Drop Overlay -->
+    <div id="drag-overlay">
+      <span>🔥 DROP AUDIO FILE OR WALLPAPER HERE</span>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+      <div class="brand-section">
+        <span class="brand-icon">🔥</span>
+        <span class="brand-title">BLAZE</span>
+        <span class="brand-badge">EDM 2.0</span>
+      </div>
+
+      <div class="nav-center-group">
+        <!-- Visualizer Style Picker -->
+        <div class="select-wrapper">
+          <label for="style-select">Style:</label>
+          <select id="style-select" class="cyber-select" aria-label="Visualizer Style"></select>
+          <span class="select-arrow">▼</span>
+        </div>
+
+        <!-- Color Theme Picker -->
+        <div class="select-wrapper">
+          <label for="theme-select">Theme:</label>
+          <select id="theme-select" class="cyber-select" aria-label="Color Theme"></select>
+          <span class="select-arrow">▼</span>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="nav-actions">
+        <button id="btn-demo-beat" class="cyber-btn primary" title="Play built-in 128 BPM EDM Synth Beat">
+          ⚡ EDM Demo
+        </button>
+        <button id="btn-load-file" class="cyber-btn" title="Open Audio File [F]">
+          📁 Audio File
+        </button>
+        <button id="btn-system-audio" class="cyber-btn" title="Capture Live System / Tab Audio [D]">
+          🖥️ System / Tab
+        </button>
+        <button id="btn-mic-audio" class="cyber-btn" title="Capture Microphone">
+          🎙️ Mic
+        </button>
+        <button id="btn-bg-upload" class="cyber-btn icon-only" title="Select Custom Wallpaper [B]">
+          🖼️
+        </button>
+        <button id="btn-logo-upload" class="cyber-btn icon-only" title="Toggle / Select Custom Logo [L]">
+          ⚡
+        </button>
+        <button id="btn-toggle-shake" class="cyber-btn icon-only" title="Cycle Bass Vibration Shake [S]">
+          🎚️
+        </button>
+        <button id="btn-toggle-tint" class="cyber-btn icon-only" title="Cycle Wallpaper Dimness Tint [O]">
+          🌓
+        </button>
+        <button id="btn-toggle-hud" class="cyber-btn icon-only" title="Toggle HUD Overlay [H]">
+          ⌨️
+        </button>
+        <button id="btn-toggle-fs" class="cyber-btn icon-only" title="Toggle Fullscreen [F11]">
+          ⛶
+        </button>
+      </div>
+    </header>
+
+    <!-- Floating Glassmorphic HUD -->
+    <aside id="hud-panel" class="hud-panel">
+      <div class="hud-header">
+        <div class="hud-status-badge">
+          <span id="hud-status-dot" class="status-dot"></span>
+          <span id="hud-status-text">LISTENING...</span>
+        </div>
+        <span id="hud-fps" class="fps-counter">60 FPS</span>
+      </div>
+
+      <div class="hud-row">
+        <span class="hud-label">Track:</span>
+        <span id="hud-track" class="hud-val">No Audio Loaded</span>
+      </div>
+      <div class="hud-row">
+        <span class="hud-label">RMS Volume:</span>
+        <span id="hud-rms" class="hud-val">0.0000</span>
+      </div>
+
+      <!-- Bass Kick Meter -->
+      <div class="meter-container">
+        <div class="meter-header">
+          <span>BASS TRANSIENT / RECOIL</span>
+        </div>
+        <div class="meter-track">
+          <div id="hud-bass-meter" class="meter-fill"></div>
+        </div>
+      </div>
+
+      <!-- Audio Source Selector Grid -->
+      <div class="source-selector-grid">
+        <button id="card-demo" class="source-card-btn" onclick="document.getElementById('btn-demo-beat').click()">
+          <span class="source-icon">⚡</span>
+          <span class="source-title">EDM Synth Demo</span>
+          <span class="source-subtitle">128 BPM 4-on-floor</span>
+        </button>
+        <button id="card-file" class="source-card-btn" onclick="document.getElementById('btn-load-file').click()">
+          <span class="source-icon">📁</span>
+          <span class="source-title">Upload Audio</span>
+          <span class="source-subtitle">MP3, WAV, FLAC</span>
+        </button>
+        <button id="card-system" class="source-card-btn" onclick="document.getElementById('btn-system-audio').click()">
+          <span class="source-icon">🖥️</span>
+          <span class="source-title">System Loopback</span>
+          <span class="source-subtitle">YouTube / Spotify Tab</span>
+        </button>
+        <button id="card-mic" class="source-card-btn" onclick="document.getElementById('btn-mic-audio').click()">
+          <span class="source-icon">🎙️</span>
+          <span class="source-title">Microphone</span>
+          <span class="source-subtitle">Live Room Audio</span>
+        </button>
+      </div>
+
+      <!-- Audio Scrubber & Controls -->
+      <div class="player-controls">
+        <input type="range" id="audio-scrub" class="scrub-bar" min="0" max="100" value="0" />
+        <div class="time-row">
+          <span id="time-current">0:00</span>
+          <span id="time-duration">0:00</span>
+        </div>
+      </div>
+
+      <!-- Hotkeys Guide -->
+      <div class="shortcuts-card">
+        <div class="shortcuts-title">Keyboard Shortcuts</div>
+        <div class="shortcut-grid">
+          <div><span class="key-badge">V / C</span> Style</div>
+          <div><span class="key-badge">T</span> Theme</div>
+          <div><span class="key-badge">B</span> Wallpaper</div>
+          <div><span class="key-badge">S</span> Bass Shake</div>
+          <div><span class="key-badge">O</span> Tint Dim</div>
+          <div><span class="key-badge">L</span> Logo / Crest</div>
+          <div><span class="key-badge">D</span> Audio Input</div>
+          <div><span class="key-badge">F</span> Open File</div>
+          <div><span class="key-badge">Space</span> Play/Pause</div>
+          <div><span class="key-badge">H</span> Hide HUD</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Hidden File Inputs -->
+    <input type="file" id="audio-file-input" class="hidden-file-input" accept="audio/*" />
+    <input type="file" id="bg-file-input" class="hidden-file-input" accept="image/*" />
+    <input type="file" id="logo-file-input" class="hidden-file-input" accept="image/*" />
+
+    <!-- Toast Notification Overlay -->
+    <div id="toast-container"></div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
